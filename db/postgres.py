@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 
 from termcolor import colored
 
+from db.logging import logging
+
 class Postgres:
 
     def __init__(self, db_name, db_username, db_password, db_host, db_port):
@@ -26,8 +28,13 @@ class Postgres:
             print(colored(e, color='red'))
             return
 
-        print(colored('Connect to postgres server: ' + db_host + ':' + db_port, color='green'))
+        print(colored('[*] connect to postgres server: ' + db_host + ':' + db_port, color='green'))
 
+    def __del__(self):
+        self._connection.close()
+        self._cursor.close()
+
+    @logging
     def __execute(self, query, commit=False, fetch=True):
         try:
             self._cursor.execute(query)
