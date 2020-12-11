@@ -8,7 +8,7 @@ def logging(func):
     def wrapper(self, *args, **kwargs):
         res = func(self, *args, **kwargs)
 
-        query = kwargs['query']
+        query = '\"' + kwargs['query'] + '\"'
         cur_time = '[' + str(datetime.datetime.now()) + '] '
         log_str = self.host + ':' + self.port + ' ' + self.user + ' ' + cur_time + query + '\n'
 
