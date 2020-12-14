@@ -51,19 +51,3 @@ class Postgres:
                 return [{key: value for key, value in row.items()} for row in self._cursor]
         except Exception as e:
             print(colored(e, color='red'))
-
-
-# if __name__ == '__main__':
-#     dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-#     if os.path.exists(dotenv_path):
-#         load_dotenv(dotenv_path)
-#     db = Postgres(
-#         db_name=os.environ.get('db_name'),
-#         db_username=os.environ.get('db_username'),
-#         db_password=os.environ.get('db_password'),
-#         db_host=os.environ.get('db_host'),
-#         db_port=os.environ.get('db_port'),
-#         log_file=os.environ.get('log_file')
-#     )
-#
-#     db.exec('SELECT * FROM hotels')
