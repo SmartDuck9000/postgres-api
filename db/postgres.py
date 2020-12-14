@@ -2,9 +2,6 @@ import psycopg2
 from psycopg2 import sql, extras
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-import os
-from dotenv import load_dotenv
-
 from termcolor import colored
 
 from db.tools import logging
