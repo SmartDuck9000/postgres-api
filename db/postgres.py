@@ -38,6 +38,9 @@ class Postgres:
     def exec(self, query):
         return self.__execute(query=query)
 
+    def select(self, table, values, conditions):
+        pass
+
     @logging
     def __execute(self, query='', commit=False, fetch=True):
         try:
