@@ -4,7 +4,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 from termcolor import colored
 
-from db.tools import logging
+from tools import logging
 
 class Postgres:
 

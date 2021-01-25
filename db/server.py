@@ -35,7 +35,7 @@ class DatabaseServer:
         self.app.run(host=self.host, port=self.port)
 
     def __setup_routes(self):
-        self.__select = self.app.route('/api/select')(self.__select)
+        self.__select = self.app.route('/api/select', methods=['GET'])(self.__select)
 
     def __select(self):
         data = request.json
