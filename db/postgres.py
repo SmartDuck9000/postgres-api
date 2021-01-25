@@ -35,7 +35,7 @@ class Postgres:
     def exec(self, query):
         return self.__execute(query=query)
 
-    def select(self, table, values, conditions):
+    def select(self, table, fields, conditions=None, ordered_by=None):
         pass
 
     @logging
