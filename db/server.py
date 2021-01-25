@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 
 import os
 from dotenv import load_dotenv
+from termcolor import colored
 
 from postgres import Postgres
 from psycopg2 import sql
@@ -47,7 +48,7 @@ class DatabaseServer:
             table = data['table']
             fields = data['fields']
         except Exception as e:
-            print(e)
+            print(colored(e, color='red'))
             return jsonify({
                 "error": e,
                 "code": 400

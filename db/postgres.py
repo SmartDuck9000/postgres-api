@@ -35,11 +35,36 @@ class Postgres:
     def exec(self, query):
         return self.__execute(query=query)
 
-    def select(self, table, fields, conditions=None, ordered_by=None):
-        pass
+    def select(self, table, fields, ordered_field=None, conditions=None):
+        for i in range(len(fields)):
+            table_field = fields[i].split('.')
+            if len(table_field) == 2:
+                fields[i] = sql.SQL(table_field[0] + '.') + sql.Identifier(table_field[1])
+            else:
+                fields[i] = sql.Identifier(fields[i])
+
+        query = sql.SQL("SELECT {fields} FROM {table}").format(
+            fields=sql.SQL(", ").join([val for val in fields]),
+            table=sql.Identifier(table)
+        )
+
+        if conditions is not None:
+            query += sql.SQL(" WHERE {conditions}").format(
+                conditions=sql.SQL(" AND ").join([cond for cond in conditions])
+            )
+
+        if ordered_field is not None:
+            table_field = ordered_field.split('.')
+            if len(table_field) == 2:
+                ordered_field = sql.SQL(table_field[0] + '.') + sql.Identifier(table_field[1])
+            else:
+                ordered_field = sql.Identifier(ordered_field)
+            query += sql.SQL(" ORDER BY {ordered_field}").format(ordered_field=ordered_field)
+
+        return self.__execute(query)
 
     @logging
-    def __execute(self, query='', commit=False, fetch=True):
+    def __execute(self, query, commit=False, fetch=True):
         try:
             self._cursor.execute(query)
             if commit:
@@ -48,3 +73,5 @@ class Postgres:
                 return [{key: value for key, value in row.items()} for row in self._cursor]
         except Exception as e:
             print(colored(e, color='red'))
+
+        return None
