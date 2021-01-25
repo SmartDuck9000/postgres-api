@@ -118,6 +118,9 @@ class Postgres:
 
         return self.__execute(query, commit=True, fetch=True)
 
+    def update(self, table, values, conditions):
+        pass
+
     @logging
     def __execute(self, query, commit=False, fetch=True):
         try:

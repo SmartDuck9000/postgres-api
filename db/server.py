@@ -114,7 +114,21 @@ class DatabaseServer:
         return jsonify(res)
 
     def __update(self):
-        pass
+        data = request.json
+
+        try:
+            table = data['table']
+            values = data['values']
+            sql_conditions = self.__parse_conditions(data['conditions'])
+        except Exception as e:
+            print(colored(e, color='red'))
+            return jsonify({
+                "error": e,
+                "code": 400
+            })
+
+        self.db.update(table, values, sql_conditions)
+        return jsonify({"code": 200})
 
     def __parse_conditions(self, conditions):
         if conditions is None:
