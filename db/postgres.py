@@ -2,12 +2,9 @@ import psycopg2
 from psycopg2 import sql, extras
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-import os
-from dotenv import load_dotenv
-
 from termcolor import colored
 
-from db.tools import logging
+from tools import logging
 
 class Postgres:
 
@@ -38,8 +35,36 @@ class Postgres:
     def exec(self, query):
         return self.__execute(query=query)
 
+    def select(self, table, fields, ordered_field=None, conditions=None):
+        for i in range(len(fields)):
+            table_field = fields[i].split('.')
+            if len(table_field) == 2:
+                fields[i] = sql.SQL(table_field[0] + '.') + sql.Identifier(table_field[1])
+            else:
+                fields[i] = sql.Identifier(fields[i])
+
+        query = sql.SQL("SELECT {fields} FROM {table}").format(
+            fields=sql.SQL(", ").join([val for val in fields]),
+            table=sql.Identifier(table)
+        )
+
+        if conditions is not None:
+            query += sql.SQL(" WHERE {conditions}").format(
+                conditions=sql.SQL(" AND ").join([cond for cond in conditions])
+            )
+
+        if ordered_field is not None:
+            table_field = ordered_field.split('.')
+            if len(table_field) == 2:
+                ordered_field = sql.SQL(table_field[0] + '.') + sql.Identifier(table_field[1])
+            else:
+                ordered_field = sql.Identifier(ordered_field)
+            query += sql.SQL(" ORDER BY {ordered_field}").format(ordered_field=ordered_field)
+
+        return self.__execute(query)
+
     @logging
-    def __execute(self, query='', commit=False, fetch=True):
+    def __execute(self, query, commit=False, fetch=True):
         try:
             self._cursor.execute(query)
             if commit:
@@ -49,18 +74,4 @@ class Postgres:
         except Exception as e:
             print(colored(e, color='red'))
 
-
-# if __name__ == '__main__':
-#     dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-#     if os.path.exists(dotenv_path):
-#         load_dotenv(dotenv_path)
-#     db = Postgres(
-#         db_name=os.environ.get('db_name'),
-#         db_username=os.environ.get('db_username'),
-#         db_password=os.environ.get('db_password'),
-#         db_host=os.environ.get('db_host'),
-#         db_port=os.environ.get('db_port'),
-#         log_file=os.environ.get('log_file')
-#     )
-#
-#     db.exec('SELECT * FROM hotels')
+        return None
