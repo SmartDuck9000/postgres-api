@@ -109,8 +109,8 @@ class DatabaseServer:
                 "code": 400
             })
 
-        self.db.insert(table, values)
-        return jsonify({"code": 200})
+        res = self.db.insert(table, values)
+        return jsonify(res)
 
     def __parse_conditions(self, conditions):
         if conditions is None:
