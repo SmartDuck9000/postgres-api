@@ -63,6 +63,9 @@ class Postgres:
 
         return self.__execute(query)
 
+    def select_with_join(self, join_tables, join_fields, fields, ordered_field=None, conditions=None):
+        pass
+
     @logging
     def __execute(self, query, commit=False, fetch=True):
         try:
