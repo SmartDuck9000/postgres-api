@@ -40,6 +40,7 @@ class DatabaseServer:
         self.__select = self.app.route('/api/select', methods=['GET'])(self.__select)
         self.__select__with_join = self.app.route('/api/select_with_join', methods=['GET'])(self.__select__with_join)
         self.__insert = self.app.route('/api/insert', methods=['POST'])(self.__insert)
+        self.__update = self.app.route('/api/update', methods=['POST'])(self.__update)
 
     def __select(self):
         data = request.json
@@ -111,6 +112,9 @@ class DatabaseServer:
 
         res = self.db.insert(table, values)
         return jsonify(res)
+
+    def __update(self):
+        pass
 
     def __parse_conditions(self, conditions):
         if conditions is None:
