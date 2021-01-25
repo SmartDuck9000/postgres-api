@@ -109,6 +109,9 @@ class Postgres:
 
         return self.__execute(query)
 
+    def insert(self, table, values):
+        pass
+
     @logging
     def __execute(self, query, commit=False, fetch=True):
         try:

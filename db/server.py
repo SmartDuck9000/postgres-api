@@ -97,7 +97,20 @@ class DatabaseServer:
         return jsonify(res)
 
     def __insert(self):
-        pass
+        data = request.json
+
+        try:
+            table = data['table']
+            values = data['values']
+        except Exception as e:
+            print(colored(e, color='red'))
+            return jsonify({
+                "error": e,
+                "code": 400
+            })
+
+        self.db.insert(table, values)
+        return jsonify({"code": 200})
 
     def __parse_conditions(self, conditions):
         if conditions is None:
