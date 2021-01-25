@@ -39,6 +39,7 @@ class DatabaseServer:
     def __setup_routes(self):
         self.__select = self.app.route('/api/select', methods=['GET'])(self.__select)
         self.__select__with_join = self.app.route('/api/select_with_join', methods=['GET'])(self.__select__with_join)
+        self.__insert = self.app.route('/api/insert', methods=['POST'])(self.__insert)
 
     def __select(self):
         data = request.json
@@ -93,6 +94,22 @@ class DatabaseServer:
                 "code": 400
             })
 
+        return jsonify(res)
+
+    def __insert(self):
+        data = request.json
+
+        try:
+            table = data['table']
+            values = data['values']
+        except Exception as e:
+            print(colored(e, color='red'))
+            return jsonify({
+                "error": e,
+                "code": 400
+            })
+
+        res = self.db.insert(table, values)
         return jsonify(res)
 
     def __parse_conditions(self, conditions):

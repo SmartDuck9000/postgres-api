@@ -109,6 +109,15 @@ class Postgres:
 
         return self.__execute(query)
 
+    def insert(self, table, values):
+        query = sql.SQL("INSERT INTO {table}({fields}) VALUES ({values}) RETURNING *").format(
+            table=sql.Identifier(table),
+            fields=sql.SQL(", ").join([sql.Identifier(col) for col, val in values.items()]),
+            values=sql.SQL(", ").join([sql.Literal(val) for col, val in values.items()])
+        )
+
+        return self.__execute(query, commit=True, fetch=True)
+
     @logging
     def __execute(self, query, commit=False, fetch=True):
         try:
