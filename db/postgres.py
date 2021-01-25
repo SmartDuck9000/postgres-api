@@ -119,7 +119,13 @@ class Postgres:
         return self.__execute(query, commit=True, fetch=True)
 
     def update(self, table, values, conditions):
-        pass
+        query = sql.SQL("UPDATE {table} SET {values} WHERE {conditions}").format(
+            table=sql.Identifier(table),
+            values=sql.SQL(", ").join([sql.Identifier(val) + ' = ' + sql.Literal(val) for col, val in values.items()]),
+            conditions=sql.SQL(" AND ").join([cond for cond in conditions])
+        )
+
+        self.__execute(query, commit=True, fetch=False)
 
     @logging
     def __execute(self, query, commit=False, fetch=True):
