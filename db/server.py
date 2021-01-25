@@ -38,6 +38,7 @@ class DatabaseServer:
 
     def __setup_routes(self):
         self.__select = self.app.route('/api/select', methods=['GET'])(self.__select)
+        self.__select__with_join = self.app.route('/api/select_with_join', methods=['GET'])(self.__select__with_join)
 
     def __select(self):
         data = request.json
@@ -60,6 +61,38 @@ class DatabaseServer:
             sql_conditions = self.__parse_conditions(data['conditions'])
 
         res = self.db.select(table, fields, ordered_field, sql_conditions)
+        return jsonify(res)
+
+    def __select__with_join(self):
+        data = request.json
+        ordered_field = None
+        sql_conditions = None
+
+        try:
+            join_tables = data['join_tables']
+            join_fields = data['join_fields']
+            fields = data['fields']
+        except Exception as e:
+            print(colored(e, color='red'))
+            return jsonify({
+                "error": e,
+                "code": 400
+            })
+
+        if 'ordered_field' in data:
+            ordered_field = data['ordered_field']
+        if 'conditions' in data:
+            sql_conditions = self.__parse_conditions(data['conditions'])
+
+        try:
+            res = self.db.select_with_join(join_tables, join_fields, fields, ordered_field, sql_conditions)
+        except Exception as e:
+            print(colored(e, color='red'))
+            return jsonify({
+                "error": e,
+                "code": 400
+            })
+
         return jsonify(res)
 
     def __parse_conditions(self, conditions):
