@@ -64,7 +64,50 @@ class Postgres:
         return self.__execute(query)
 
     def select_with_join(self, join_tables, join_fields, fields, ordered_field=None, conditions=None):
-        pass
+        if len(join_tables) - 1 != len(join_fields):
+            raise AttributeError('Wrong length of join tables and fields')
+
+        for i in range(len(fields)):
+            table_field = fields[i].split('.')
+            if len(table_field) == 2:
+                fields[i] = sql.SQL(table_field[0] + '.') + sql.Identifier(table_field[1])
+            else:
+                fields[i] = sql.Identifier(fields[i])
+
+        query = sql.SQL("SELECT ") + sql.SQL(", ").join([val for val in fields])
+        query += sql.SQL(" FROM ") + sql.Identifier(join_tables[0])
+
+        for i in range(len(join_tables) - 1):
+            next_table = sql.Identifier(join_tables[i + 1])
+
+            left_field = join_fields[i][0].split('.')
+            right_field = join_fields[i][1].split('.')
+
+            if len(left_field) == 2:
+                left_field = sql.SQL(left_field[0] + '.') + sql.Identifier(left_field[1])
+            else:
+                left_field = sql.Identifier(left_field[0])
+
+            if len(right_field) == 2:
+                right_field = sql.SQL(right_field[0] + '.') + sql.Identifier(right_field[1])
+            else:
+                right_field = sql.Identifier(right_field[0])
+
+            query += sql.SQL(" JOIN ") + next_table + sql.SQL(" ON ") + left_field + sql.SQL(" = ") + right_field
+
+        if conditions is not None:
+            query += sql.SQL(" WHERE ") + sql.SQL(" AND ").join([cond for cond in conditions])
+
+        if ordered_field is not None:
+            table_field = ordered_field.split('.')
+            if len(table_field) == 2:
+                ordered_field = sql.SQL(table_field[0] + '.') + sql.Identifier(table_field[1])
+            else:
+                ordered_field = sql.Identifier(ordered_field)
+
+            query += sql.SQL(" ORDER BY ") + ordered_field
+
+        return self.__execute(query)
 
     @logging
     def __execute(self, query, commit=False, fetch=True):
