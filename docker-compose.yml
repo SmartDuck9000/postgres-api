@@ -1,0 +1,22 @@
+version: "3"
+services:
+  postgres:
+    image: postgres
+    restart: unless-stopped
+    container_name: postgres
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-password}
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_DB=${POSTGRES_DB:-db}
+    env_file:
+      - ./db/.env
+    volumes:
+      - ./.docker/data/postgresql/:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+    db_service:
+      image: pg-api-server
+      command: python ./db/server.py
+      ports:
+        - "5000:5000"

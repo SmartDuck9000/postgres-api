@@ -21,9 +21,9 @@ class DatabaseServer:
             self.port = os.environ.get('server_port')
 
             self.db = Postgres(
-                db_name=os.environ.get('db_name'),
-                db_username=os.environ.get('db_username'),
-                db_password=os.environ.get('db_password'),
+                db_name=os.environ.get('POSTGRES_DB'),
+                db_username=os.environ.get('POSTGRES_USER'),
+                db_password=os.environ.get('POSTGRES_PASSWORD'),
                 db_host=os.environ.get('db_host'),
                 db_port=os.environ.get('db_port'),
                 log_file=os.environ.get('log_file')
